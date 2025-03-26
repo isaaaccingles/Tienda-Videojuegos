@@ -1,12 +1,12 @@
 package com.tiendavideojuegos.tienda.Controllers;
 
+import com.tiendavideojuegos.tienda.Exceptions.ResourceNotFoundException;
 import com.tiendavideojuegos.tienda.Models.GenerosModel;
 import com.tiendavideojuegos.tienda.Models.PlataformaModel;
 import com.tiendavideojuegos.tienda.Models.VideojuegoModel;
 import com.tiendavideojuegos.tienda.Repositories.GenerosRepository;
 import com.tiendavideojuegos.tienda.Repositories.PlataformaRepository;
 import com.tiendavideojuegos.tienda.Repositories.VideojuegoRepository;
-import com.tiendavideojuegos.tienda.Exceptions.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

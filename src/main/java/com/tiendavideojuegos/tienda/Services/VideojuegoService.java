@@ -5,12 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.tiendavideojuegos.tienda.Models.VideojuegoModel;
-import com.tiendavideojuegos.tienda.Repositories.VideojuegoRepository;
 import com.tiendavideojuegos.tienda.Models.GenerosModel;
 import com.tiendavideojuegos.tienda.Models.PlataformaModel;
-import com.tiendavideojuegos.tienda.Repositories.PlataformaRepository;
+import com.tiendavideojuegos.tienda.Models.VideojuegoModel;
 import com.tiendavideojuegos.tienda.Repositories.GenerosRepository;
+import com.tiendavideojuegos.tienda.Repositories.PlataformaRepository;
+import com.tiendavideojuegos.tienda.Repositories.VideojuegoRepository;
 
 import java.util.ArrayList;
 import java.util.List;

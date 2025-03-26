@@ -1,10 +1,11 @@
 package com.tiendavideojuegos.tienda.Controllers;
 
+import com.tiendavideojuegos.tienda.Exceptions.ResourceNotFoundException;
 import com.tiendavideojuegos.tienda.Models.GenerosModel;
 import com.tiendavideojuegos.tienda.Models.VideojuegoModel;
 import com.tiendavideojuegos.tienda.Repositories.GenerosRepository;
 import com.tiendavideojuegos.tienda.Repositories.VideojuegoRepository;
-import com.tiendavideojuegos.tienda.Exceptions.ResourceNotFoundException;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
