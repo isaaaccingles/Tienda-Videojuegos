@@ -68,23 +68,23 @@ public class UserController {
     // Autenticación de un usuario
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserModel user) {
-        UserModel existingUser = userService.findByUsername(user.getUsername());
-        
-        if (existingUser == null) {
+        Optional<UserModel> existingUser = userService.findByUsername(user.getUsername());
+
+        if (existingUser.isEmpty()) {
             return ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas."));
         }
 
-        boolean isPasswordValid = userService.validatePassword(user.getPassword(), existingUser.getPassword());
+        boolean isPasswordValid = userService.validatePassword(user.getPassword(), existingUser.get().getPassword());
         if (!isPasswordValid) {
             return ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas."));
         }
 
         return ResponseEntity.ok(Map.of(
             "message", "Autenticación exitosa.",
-            "id", existingUser.getId(),
-            "username", existingUser.getUsername(),
-            "email", existingUser.getEmail(),
-            "role", existingUser.getRole()
+            "id", existingUser.get().getId(),
+            "username", existingUser.get().getUsername(),
+            "email", existingUser.get().getEmail(),
+            "role", existingUser.get().getRole()
         ));
     }
 
