@@ -21,12 +21,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Obtener todos los usuarios
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getAllUsers() {
         List<UserModel> users = userService.getAllUsers();
-
-        // Excluir la contraseña en la respuesta
         List<Map<String, Object>> usersWithoutPassword = users.stream().map(user -> {
             Map<String, Object> userData = new HashMap<>();
             userData.put("id", user.getId());
@@ -35,11 +32,9 @@ public class UserController {
             userData.put("role", user.getRole());
             return userData;
         }).collect(Collectors.toList());
-
         return ResponseEntity.ok(usersWithoutPassword);
     }
 
-    // Registro de un nuevo usuario
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserModel user, BindingResult result) {
         if (result.hasErrors()) {
@@ -48,11 +43,15 @@ public class UserController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        if (userService.findByUsername(user.getUsername()) != null) {
+        Optional<UserModel> existingUser = userService.findByUsername(user.getUsername());
+        System.out.println("Username: " + user.getUsername() + " - Exists: " + existingUser.isPresent());
+        if (existingUser.isPresent()) {
             return ResponseEntity.badRequest().body("El nombre de usuario ya está en uso.");
         }
 
-        if (userService.findByEmail(user.getEmail()) != null) {
+        Optional<UserModel> existingEmail = userService.findByEmail(user.getEmail());
+        System.out.println("Email: " + user.getEmail() + " - Exists: " + existingEmail.isPresent());
+        if (existingEmail.isPresent()) {
             return ResponseEntity.badRequest().body("El correo electrónico ya está registrado.");
         }
 
@@ -65,11 +64,9 @@ public class UserController {
         ));
     }
 
-    // Autenticación de un usuario
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserModel user) {
         Optional<UserModel> existingUser = userService.findByUsername(user.getUsername());
-
         if (existingUser.isEmpty()) {
             return ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas."));
         }
@@ -79,8 +76,10 @@ public class UserController {
             return ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas."));
         }
 
+        String token = userService.generateToken(existingUser.get().getUsername());
         return ResponseEntity.ok(Map.of(
             "message", "Autenticación exitosa.",
+            "token", token,
             "id", existingUser.get().getId(),
             "username", existingUser.get().getUsername(),
             "email", existingUser.get().getEmail(),
@@ -88,14 +87,13 @@ public class UserController {
         ));
     }
 
-    // Eliminar usuario (solo ADMIN)
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         Optional<UserModel> user = userService.findById(id);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             return ResponseEntity.status(404).body(Map.of("error", "Usuario no encontrado."));
         }
-        
+
         userService.deleteUser(id);
         return ResponseEntity.ok(Map.of("message", "Usuario eliminado correctamente."));
     }

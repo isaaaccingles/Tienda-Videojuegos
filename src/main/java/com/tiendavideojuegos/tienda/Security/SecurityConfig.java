@@ -5,20 +5,27 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import org.springframework.security.config.Customizer;
+// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
+// import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+// import org.springframework.security.web.SecurityFilterChain;
+// import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.tiendavideojuegos.tienda.Services.UserService;
+
+import org.springframework.http.HttpMethod;
+
 import com.tiendavideojuegos.tienda.Models.UserModel;
 
 @Configuration
@@ -26,40 +33,69 @@ import com.tiendavideojuegos.tienda.Models.UserModel;
 public class SecurityConfig {
 
     @Autowired
-    private UserService userService;  // Servicio que carga los usuarios
+    private UserService userService;
+
+    @Autowired
+    private JWTAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())  // Deshabilitar CSRF para pruebas con Postman
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/gamenest/users/register", "/gamenest/users/login").permitAll()  // Estos pueden ser públicos
-                .requestMatchers("/gamenest/users/delete/**", "/gamenest/users/update/**").hasRole("ADMIN")  // Solo ADMIN
-                .anyRequest().authenticated()  // Requiere autenticación en otras solicitudes
+                // Endpoints públicos (sin autenticación)
+                .requestMatchers("/gamenest/users/register", "/gamenest/users/login").permitAll()
+                .requestMatchers(HttpMethod.GET, "/gamenest/videojuegos", "/gamenest/videojuegos/**").permitAll() // Todos los GET de videojuegos públicos
+
+                // Endpoints restringidos a ROLE_ADMIN
+                .requestMatchers("/gamenest/users/delete/**", "/gamenest/users/update/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/gamenest/videojuegos").hasRole("ADMIN") // Crear videojuego
+                .requestMatchers(HttpMethod.PUT, "/gamenest/videojuegos/id/**").hasRole("ADMIN") // Actualizar videojuego
+                .requestMatchers(HttpMethod.DELETE, "/gamenest/videojuegos/id/**").hasRole("ADMIN") // Eliminar videojuego
+
+                // Cualquier otra solicitud requiere autenticación
+                .anyRequest().authenticated()
             )
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // No usar sesión
-            .httpBasic(Customizer.withDefaults());  // Habilita Basic Authentication
-        
-        System.out.println("Configuración de seguridad aplicada correctamente.");
-    
+            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
-    
+
+    // @Bean
+    // public JWTAuthenticationFilter jwtAuthenticationFilter() {
+    //     return new JWTAuthenticationFilter();
+    // }
+
+
+
+    // // @Bean
+    // // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    // //     http
+    // //         .csrf(csrf -> csrf.disable())
+    // //         .authorizeHttpRequests(auth -> auth
+    // //             .requestMatchers("/gamenest/users/register", "/gamenest/users/login").permitAll()
+    // //             .requestMatchers("/gamenest/users/delete/**", "/gamenest/users/update/**").hasRole("ADMIN")
+    // //             .anyRequest().authenticated()
+    // //         )
+    // //         .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    // //         .httpBasic(Customizer.withDefaults())
+    // //         .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // Usamos el bean directamente
+        
+    // //     return http.build();
+    // // }
+
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            System.out.println("Intentando autenticar usuario: " + username);
-    
             UserModel user = userService.findByUsername(username)
-                .orElseThrow(() -> {
-                    System.out.println("Usuario no encontrado: " + username);
-                    return new UsernameNotFoundException("Usuario no encontrado");
-                });
-    
-            System.out.println("Usuario encontrado: " + username + ", Role: " + user.getRole());
-    
-            return new User(user.getUsername(), user.getPassword(), 
-                            AuthorityUtils.createAuthorityList("ROLE_" + user.getRole()));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+            return new org.springframework.security.core.userdetails.User(
+                user.getUsername(), 
+                user.getPassword(), 
+                AuthorityUtils.createAuthorityList("ROLE_" + user.getRole())
+            );
         };
     }
 
