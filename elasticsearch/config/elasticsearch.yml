@@ -1,0 +1,4 @@
+cluster.name: "docker-cluster"
+node.name: "node-1"
+path.data: /usr/share/elasticsearch/data
+path.logs: /usr/share/elasticsearch/logs

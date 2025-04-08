@@ -1,43 +1,46 @@
+
 version: '3.8'
 
 services:
-  app:
-    build: .
-    container_name: app-container
-    ports:
-      - "8080:8080"  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: elasticsearch
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/tienda_videojuegos  
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root1234
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
-      SPRING_JPA_HIBERNATE_DDL_AUTO: none
-      SPRINGDOC_API_DOCS_ENABLED: "true"
-      SPRINGDOC_API_DOCS_PATH: /v3/api-docs
-      SPRINGDOC_SWAGGER_UI_ENABLED: "true"
-      SPRINGDOC_SWAGGER_UI_PATH: /swagger-ui.html
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - mynetwork
+ 
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.0
+    container_name: logstash
     depends_on:
-      - db
-    networks:
-      - mynetwork
-
-  db:
-    image: mysql:8
-    container_name: db-container
-    environment:
-      MYSQL_ROOT_PASSWORD: root1234
-      MYSQL_DATABASE: tienda_videojuegos
+      - elasticsearch
     ports:
-      - "3306:3306"  
-    volumes:
-      - db_data:/var/lib/mysql  # Persistir los datos de la base de datos
+      - "5044:5044"
     networks:
       - mynetwork
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    environment:
+      - LS_JAVA_OPTS=-Xmx1g -Xms1g
 
-volumes:
-  db_data:
-
+ 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+    networks:
+      - mynetwork
+ 
 networks:
   mynetwork:
     driver: bridge

@@ -43,7 +43,6 @@ public class VideojuegoModel {
     private int stock;
 
     @Column(name = "fecha_lanzamiento")
-    @Temporal(TemporalType.DATE)
     private LocalDate fechaLanzamiento;
 
     @Size(max = 100, message = "El desarrollador no puede tener más de 100 caracteres")

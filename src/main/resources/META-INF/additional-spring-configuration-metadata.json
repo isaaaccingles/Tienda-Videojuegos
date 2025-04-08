@@ -1,0 +1,32 @@
+{"properties": [
+    {
+      "name": "spring.elasticsearch.rest.uris",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.elasticsearch.rest.uris'"
+    },
+    {
+      "name": "spring.elasticsearch.cluster-name",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.elasticsearch.cluster-name'"
+    },
+    {
+      "name": "spring.elasticsearch.rest.client.sniffer.sniff-on-start",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.elasticsearch.rest.client.sniffer.sniff-on-start'"
+    },
+    {
+      "name": "spring.elasticsearch.rest.client.sniffer.interval",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.elasticsearch.rest.client.sniffer.interval'"
+    },
+    {
+      "name": "spring.data.elasticsearch.username",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.data.elasticsearch.username'"
+    },
+    {
+      "name": "spring.data.elasticsearch.password",
+      "type": "java.lang.String",
+      "description": "A description for 'spring.data.elasticsearch.password'"
+    }
+  ]}

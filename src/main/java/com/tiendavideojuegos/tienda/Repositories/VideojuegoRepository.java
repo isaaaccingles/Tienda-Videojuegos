@@ -10,7 +10,6 @@ import com.tiendavideojuegos.tienda.Models.VideojuegoModel;
 
 @Repository
 public interface VideojuegoRepository extends JpaRepository<VideojuegoModel, Long> {
-    @SuppressWarnings("null")
     Optional<VideojuegoModel> findById(Long id);
     Optional<VideojuegoModel> findByTitulo(String titulo);
     List<VideojuegoModel> findByDesarrollador(String desarrollador);
