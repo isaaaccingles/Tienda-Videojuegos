@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class); // Logger
 
     @Autowired
     private UserRepository userRepository;
@@ -48,6 +52,9 @@ public class UserService {
 
     @Transactional
     public UserModel registerUser(UserModel user) {
+        if (user.getRole() == null) {
+            user.setRole(UserModel.Role.USER); // Asignar el rol por defecto 'USER'
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -70,15 +77,19 @@ public class UserService {
         Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
         Date issuedAt = new Date();
         Date expiration = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
-        System.out.println("Issued At: " + issuedAt);
-        System.out.println("Expiration: " + expiration);
+        
+        logger.info("Issued At: {}", issuedAt);
+        logger.info("Expiration: {}", expiration);
 
         UserModel user = findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        System.out.println("User found: " + user.getUsername() + ", Role: " + user.getRole());
+
+        logger.info("User found: {}, Role: {}", user.getUsername(), user.getRole());
+        
         List<GrantedAuthority> authorities = Collections.singletonList(
                 new SimpleGrantedAuthority("ROLE_" + user.getRole()));
-        System.out.println("Authorities: " + authorities);
+        
+        logger.info("Authorities: {}", authorities);
 
         return Jwts.builder()
                 .setSubject(username)

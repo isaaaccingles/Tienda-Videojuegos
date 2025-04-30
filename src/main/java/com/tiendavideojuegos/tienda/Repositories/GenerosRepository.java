@@ -10,6 +10,5 @@ import com.tiendavideojuegos.tienda.Models.GenerosModel;
 @Repository
 public interface GenerosRepository extends JpaRepository<GenerosModel, Long> {
     // Buscar género por ID
-    @SuppressWarnings("null")
     Optional<GenerosModel> findById(Long id); 
 }

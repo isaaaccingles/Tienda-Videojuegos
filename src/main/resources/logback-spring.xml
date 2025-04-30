@@ -1,10 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>localhost:5044</destination> 
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+
+    <!-- Appender que escribe los logs en consola en formato JSON -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <loggerName />
+                <pattern>
+                    <pattern>
+                        {
+                            "level": "%level",
+                            "message": "%message",
+                            "thread": "%thread",
+                            "timestamp": "%date{ISO8601}",
+                            "logger": "%logger",
+                            "exception": "%exception"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
     </appender>
 
+    <!-- Appender para enviar logs a Logstash (y de ahí a Elasticsearch) -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>localhost:5044</destination> 
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"appname":"tienda"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- Configuración de la raíz del logger -->
     <root level="INFO">
+        <appender-ref ref="CONSOLE" />
         <appender-ref ref="LOGSTASH" />
     </root>
+
 </configuration>

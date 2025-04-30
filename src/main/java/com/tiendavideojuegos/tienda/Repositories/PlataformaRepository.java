@@ -9,7 +9,6 @@ import java.util.Optional;
 @Repository
 public interface PlataformaRepository extends JpaRepository<PlataformaModel, Long> {
     // Buscar plataforma por ID
-    @SuppressWarnings("null")
     Optional<PlataformaModel> findById(Long id);
 
 }

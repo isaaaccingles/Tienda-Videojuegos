@@ -1,0 +1,47 @@
+{
+    "@timestamp": [
+      "2025-04-28T19:35:19.381Z"
+    ],
+    "@version": [
+      "1"
+    ],
+    "@version.keyword": [
+      "1"
+    ],
+    "appname": [
+      "tienda"
+    ],
+    "appname.keyword": [
+      "tienda"
+    ],
+    "level": [
+      "INFO"
+    ],
+    "level_value": [
+      20000
+    ],
+    "level.keyword": [
+      "INFO"
+    ],
+    "logger_name": [
+      "com.tiendavideojuegos.tienda.Controllers.UserController"
+    ],
+    "logger_name.keyword": [
+      "com.tiendavideojuegos.tienda.Controllers.UserController"
+    ],
+    "message": [
+      "Autenticación exitosa para el usuario con correo: admin@ejemplo.com"
+    ],
+    "message.keyword": [
+      "Autenticación exitosa para el usuario con correo: admin@ejemplo.com"
+    ],
+    "thread_name": [
+      "http-nio-8080-exec-2"
+    ],
+    "thread_name.keyword": [
+      "http-nio-8080-exec-2"
+    ],
+    "_id": "DIHlfZYBkzpROol4kgnS",
+    "_index": "springboot-logs-2025.04.28",
+    "_score": null
+  }

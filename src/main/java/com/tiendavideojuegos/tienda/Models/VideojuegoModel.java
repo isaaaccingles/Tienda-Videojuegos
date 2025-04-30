@@ -64,6 +64,8 @@ public class VideojuegoModel {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    private String imagen_url;
+
     @ManyToMany
     @JoinTable(
         name = "videojuegos_plataformas", 
@@ -209,5 +211,30 @@ public class VideojuegoModel {
 
     public void setGenerosIds(List<Long> generosIds) {
         this.generosIds = generosIds;
+    }
+
+    public String getImagenUrl() {
+        return imagen_url;
+    }
+
+    public void setImagenUrl(String imagen_url) {
+        this.imagen_url = imagen_url;
+    }
+
+    @Override
+    public String toString() {
+        return "VideojuegoModel{" +
+               "id=" + id +
+               ", titulo='" + titulo + '\'' +
+               ", descripcion='" + descripcion + '\'' +
+               ", precio=" + precio +
+               ", stock=" + stock +
+               ", fechaLanzamiento=" + fechaLanzamiento +
+               ", desarrollador='" + desarrollador + '\'' +
+               ", editor='" + editor + '\'' +
+               ", calificacionEdad='" + calificacionEdad + '\'' +
+               ", plataformas=" + plataformas +
+               ", generos=" + generos +
+               '}';
     }
 }

@@ -34,7 +34,7 @@ public class GenerosController {
         
         // Obtener los videojuegos asociados a este género
         List<VideojuegoModel> videojuegos = videojuegoRepository.findByGeneros_Id(id);
-        genero.setVideojuegos(videojuegos);  // Asumiendo que tienes un setter en GenerosModel para esta lista
+        genero.setVideojuegos(videojuegos);  
         
         return genero;
     }

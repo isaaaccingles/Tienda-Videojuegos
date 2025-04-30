@@ -81,4 +81,11 @@ public class UserModel {
     public enum Role {
         USER, ADMIN
     }
+
+    public UserModel() {
+    }
+
+    public UserModel(Long id) {
+        this.id = id;
+    }
 }
