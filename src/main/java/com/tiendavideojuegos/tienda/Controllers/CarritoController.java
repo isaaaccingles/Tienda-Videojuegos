@@ -1,7 +1,9 @@
 package com.tiendavideojuegos.tienda.Controllers;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tiendavideojuegos.tienda.Exceptions.ConflictException;
+import com.tiendavideojuegos.tienda.Exceptions.ResourceNotFoundException;
 import com.tiendavideojuegos.tienda.Models.CarritoModel;
 import com.tiendavideojuegos.tienda.Services.CarritoService;
 
@@ -29,21 +33,51 @@ public class CarritoController {
         return carritoService.getCartByUser(userId);
     }
 
-    @PostMapping("/agregar")
-    public ResponseEntity<CarritoModel> addToCart(
-            @RequestParam Long userId,
-            @RequestParam Long videojuegoId,
-            @RequestParam Integer cantidad) {
-        System.out.println("Llegó a /agregar con userId: " + userId + ", videojuegoId: " + videojuegoId + ", cantidad: " + cantidad);
-        try {
-            CarritoModel carrito = carritoService.addToCart(userId, videojuegoId, cantidad);
-            return ResponseEntity.ok(carrito);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+@PostMapping("/agregar")
+public ResponseEntity<?> addToCart(
+        @RequestParam(required = true) Long userId,
+        @RequestParam(required = true) Long videojuegoId,
+        @RequestParam(required = true) Integer cantidad) {
+    
+    System.out.println("Inicio addToCart - userId: " + userId + ", videojuegoId: " + videojuegoId);
+    
+    try {
+        // Validación básica de parámetros
+        if (userId == null || videojuegoId == null || cantidad == null || cantidad <= 0) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Parámetros inválidos",
+                "details", Map.of(
+                    "userId", userId,
+                    "videojuegoId", videojuegoId,
+                    "cantidad", cantidad
+                )
+            ));
         }
+
+        CarritoModel carrito = carritoService.addToCart(userId, videojuegoId, cantidad);
+        
+        return ResponseEntity.ok(Map.of(
+            "success", true,
+            "data", carrito
+        ));
+        
+    } catch (ResourceNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(Map.of(
+            "error", e.getMessage(),
+            "type", "NOT_FOUND"
+        ));
+    } catch (ConflictException e) {
+        return ResponseEntity.status(HttpStatus.SC_CONFLICT).body(Map.of(
+            "error", e.getMessage(),
+            "type", "CONFLICT"
+        ));
+    } catch (Exception e) {
+        return ResponseEntity.internalServerError().body(Map.of(
+            "error", "Error interno del servidor",
+            "details", e.getMessage()
+        ));
     }
+}
     
     @DeleteMapping("/eliminar/{itemId}")
     public ResponseEntity<?> removeItem(@PathVariable Long itemId) {
