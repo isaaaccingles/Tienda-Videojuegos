@@ -34,18 +34,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors.and()) // Habilitar CORS (usa WebConfig.java)
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                // Permitir solicitudes OPTIONS sin autenticación
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Endpoints públicos
                 .requestMatchers(HttpMethod.POST, "/gamenest/carrito/agregar").permitAll()
                 .requestMatchers("/gamenest/users/register", "/gamenest/users/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/gamenest/videojuegos/**").permitAll()
                 .requestMatchers("/images/**").permitAll()
-                
                 // Endpoints de admin
                 .requestMatchers("/gamenest/users/delete/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/gamenest/videojuegos").hasRole("ADMIN")
-                
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )

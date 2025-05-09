@@ -54,7 +54,7 @@ public class VideojuegoModel {
     private String editor;
 
     @Size(max = 10, message = "La calificación de edad no puede tener más de 10 caracteres")
-    @Pattern(regexp = "^[A-E][0-9]+\\+$", message = "El formato de la calificación de edad es incorrecto")
+    @Pattern(regexp = "^[EMT][0-9]+\\+$", message = "Formato inválido") 
     @Column(name = "calificacion_edad", length = 10)
     private String calificacionEdad;
 

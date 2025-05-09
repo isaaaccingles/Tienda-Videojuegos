@@ -14,10 +14,8 @@ public interface VideojuegoRepository extends JpaRepository<VideojuegoModel, Lon
     Optional<VideojuegoModel> findByTitulo(String titulo);
     List<VideojuegoModel> findByDesarrollador(String desarrollador);
     List<VideojuegoModel> findByCalificacionEdad(String calificacionEdad);
-
     // Buscar videojuegos por ID de plataforma
     List<VideojuegoModel> findByPlataformas_Id(Long plataformaId); 
-
     // Buscar videojuegos por ID de género
     List<VideojuegoModel> findByGeneros_Id(Long generoId); 
 }

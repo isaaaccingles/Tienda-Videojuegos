@@ -48,6 +48,8 @@ public class CarritoService {
             VideojuegoModel videojuego = videojuegoRepo.findById(videojuegoId)
                     .orElseThrow(() -> new ResourceNotFoundException("Videojuego no encontrado"));
             System.out.println("Videojuego encontrado: " + videojuego.getTitulo());
+
+            System.out.println("Calificación edad del videojuego: " + videojuego.getCalificacionEdad());
     
             // Verificar si hay suficiente stock
             if (videojuego.getStock() < cantidad) {
@@ -70,15 +72,25 @@ public class CarritoService {
             videojuego.setStock(videojuego.getStock() - cantidad);
             videojuegoRepo.save(videojuego);
 
+            System.out.println("Guardando item en carrito:");
+            System.out.println("Usuario ID: " + item.getUser().getId());
+            System.out.println("Videojuego ID: " + item.getVideojuego().getId());
+            System.out.println("Cantidad: " + item.getCantidad());
+        
             // Guardar el item en el carrito
             CarritoModel result = carritoRepo.save(item);
-    
+        
             System.out.println("Producto agregado al carrito con éxito.");
             return result;
-    
+        
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e; // Dejar que el controller capture el error
+            // Mostrar la causa raíz del error
+            Throwable root = e;
+            while (root.getCause() != null) {
+                root = root.getCause();
+            }
+            System.err.println("Error al agregar al carrito: " + root.getClass().getSimpleName() + " - " + root.getMessage());
+            throw e;
         }
     }
 
