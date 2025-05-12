@@ -64,6 +64,7 @@ public class VideojuegoModel {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @Column(name = "imagen_url")
     private String imagen_url;
 
     @ManyToMany
@@ -84,7 +85,6 @@ public class VideojuegoModel {
     @JsonManagedReference 
     private List<GenerosModel> generos;
 
-    // Nuevas propiedades para los IDs de plataformas y géneros
     @Transient
     private List<Long> plataformasIds;
 
@@ -233,6 +233,7 @@ public class VideojuegoModel {
                ", desarrollador='" + desarrollador + '\'' +
                ", editor='" + editor + '\'' +
                ", calificacionEdad='" + calificacionEdad + '\'' +
+               ", imagenUrl='" + imagen_url + '\'' +
                ", plataformas=" + plataformas +
                ", generos=" + generos +
                '}';

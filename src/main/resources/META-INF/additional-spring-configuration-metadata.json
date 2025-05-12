@@ -33,5 +33,10 @@
     "name": "logstash.host",
     "type": "java.lang.String",
     "description": "A description for 'logstash.host'"
+  },
+  {
+    "name": "gemini.api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'gemini.api.key'"
   }
 ]}

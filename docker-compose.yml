@@ -11,12 +11,18 @@ services:
       - "9200:9200"
     networks:
       - mynetwork
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.12.0
     container_name: logstash
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     ports:
       - "5044:5044"
     networks:
@@ -25,12 +31,18 @@ services:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
     environment:
       - LS_JAVA_OPTS=-Xmx1g -Xms1g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9600"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.12.0
     container_name: kibana
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     ports:
       - "5601:5601"
     environment:
@@ -38,42 +50,6 @@ services:
       - XPACK_SECURITY_ENABLED=false
     networks:
       - mynetwork
-
-  app:
-    build:
-      context: .
-    container_name: springboot_app
-    depends_on:
-      - mysql
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql_db:3306/tienda_videojuegos
-      SPRING_DATASOURCE_USERNAME: usuario
-      SPRING_DATASOURCE_PASSWORD: contraseña
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "true"
-    networks:
-      - mynetwork
-
-  mysql:
-    image: mysql:8
-    container_name: mysql_db
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root1234
-      MYSQL_DATABASE: tienda_videojuegos
-      MYSQL_USER: usuario
-      MYSQL_PASSWORD: contraseña
-    volumes:
-      - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-    networks:
-      - mynetwork
-
-volumes:
-  mysql_data:
 
 networks:
   mynetwork:

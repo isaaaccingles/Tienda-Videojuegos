@@ -1,5 +1,5 @@
 # Fase de construcción
-FROM eclipse-temurin:17.0.14_7-jdk AS build
+FROM eclipse-temurin:24.0.1_9-jdk AS build
 
 # Establecer el directorio de trabajo en /app
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
 # Fase de ejecución
-FROM eclipse-temurin:17.0.14_7-jre
+FROM eclipse-temurin:24.0.1_9-jre
 
 # Establecer el directorio de trabajo en /app
 WORKDIR /app
