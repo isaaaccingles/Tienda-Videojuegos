@@ -73,30 +73,29 @@ public class UserService {
     }
 
     @SuppressWarnings("deprecation")
-    public String generateToken(String username) {
+    public String generateToken(UserModel user) {
         Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
         Date issuedAt = new Date();
         Date expiration = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
-        
+
         logger.info("Issued At: {}", issuedAt);
         logger.info("Expiration: {}", expiration);
-
-        UserModel user = findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
         logger.info("User found: {}, Role: {}", user.getUsername(), user.getRole());
-        
+
         List<GrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole()));
-        
+            new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+
         logger.info("Authorities: {}", authorities);
 
+        String userId = user.getId().toString();
+        logger.info("Generando token para userId: {}", userId);
+
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(issuedAt)
-                .setExpiration(expiration)
-                .claim("roles", authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+            .setSubject(userId) // Usar el ID del usuario como subject
+            .setIssuedAt(issuedAt)
+            .setExpiration(expiration)
+            .claim("roles", authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
     }
 }

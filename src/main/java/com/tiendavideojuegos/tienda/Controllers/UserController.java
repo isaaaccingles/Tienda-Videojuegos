@@ -86,35 +86,35 @@ public class UserController {
     
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserModel user) {
-        logger.info("Intentando iniciar sesión para el usuario con correo: {}", user.getEmail()); 
+        logger.info("Intentando iniciar sesión para el usuario con correo: {}", user.getEmail());
 
         // Buscar el usuario por el correo electrónico
-        Optional<UserModel> existingUser = userService.findByEmail(user.getEmail()); 
+        Optional<UserModel> existingUser = userService.findByEmail(user.getEmail());
         if (existingUser.isEmpty()) {
-            logger.warn("Credenciales incorrectas para el correo: {}", user.getEmail());
-            return ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas."));
+        logger.warn("Credenciales incorrectas para el correo: {}", user.getEmail());
+        return ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas."));
         }
 
         // Validar la contraseña
         boolean isPasswordValid = userService.validatePassword(user.getPassword(), existingUser.get().getPassword());
         if (!isPasswordValid) {
-            logger.warn("Contraseña incorrecta para el usuario con correo: {}", user.getEmail());
-            return ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas."));
+        logger.warn("Contraseña incorrecta para el usuario con correo: {}", user.getEmail());
+        return ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas."));
         }
 
         // Generar el token
-        String token = userService.generateToken(existingUser.get().getUsername());
+        String token = userService.generateToken(existingUser.get()); // Pasar UserModel
         logger.info("Autenticación exitosa para el usuario con correo: {}", user.getEmail());
 
         return ResponseEntity.ok(Map.of(
-            "message", "Autenticación exitosa.",
-            "token", token,
-            "id", existingUser.get().getId(),
-            "username", existingUser.get().getUsername(),
-            "email", existingUser.get().getEmail(),
-            "role", existingUser.get().getRole()
+        "message", "Autenticación exitosa.",
+        "token", token,
+        "id", existingUser.get().getId(),
+        "username", existingUser.get().getUsername(),
+        "email", existingUser.get().getEmail(),
+        "role", existingUser.get().getRole()
         ));
-    }
+  }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
