@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 @Tag(name = "Videojuegos", description = "Controlador para gestionar videojuegos")
 @RestController
-@CrossOrigin(origins = "http://localhost:3000") 
+@CrossOrigin(origins = "http://localhost:3001") 
 @RequestMapping("/gamenest/videojuegos") 
 public class VideojuegoController {
 

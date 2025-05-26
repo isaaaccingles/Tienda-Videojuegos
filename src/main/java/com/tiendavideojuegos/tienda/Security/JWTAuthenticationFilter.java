@@ -40,7 +40,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-                @SuppressWarnings("deprecation")
                 Claims claims = Jwts.parser()
                         .setSigningKey(key)
                         .build()

@@ -72,7 +72,7 @@ public class UserService {
         }
     }
 
-    @SuppressWarnings("deprecation")
+    
     public String generateToken(UserModel user) {
         Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
         Date issuedAt = new Date();
